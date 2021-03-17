@@ -47,8 +47,8 @@ namespace Tablet_Area_Randomizer
                     float rand_expanded_y = 1 / rand_clamp_y;
                     rand_old_y = rand_clamp_y;
 
-                    float timer_rand_raw = (float)multiplier.NextDouble();
-                    timer_interval_rand = timer_rand_raw * (Time_interval_max - Time_interval_min) + Time_interval_min;
+                    float timer_rand = (float)multiplier.NextDouble();
+                    timer_interval_rand = timer_rand * (Time_interval_max - Time_interval_min) + Time_interval_min;
 
                     return new Vector2(
                         input.X *= rand_expanded_x,
@@ -71,8 +71,8 @@ namespace Tablet_Area_Randomizer
                     float rand_expanded = 1 / rand_clamp;
                     rand_old = rand_clamp;
 
-                    float timer_rand_raw = (float)multiplier.NextDouble();
-                    timer_interval_rand = timer_rand_raw * (Time_interval_max - Time_interval_min) + Time_interval_min;
+                    float timer_rand = (float)multiplier.NextDouble();
+                    timer_interval_rand = timer_rand * (Time_interval_max - Time_interval_min) + Time_interval_min;
 
                     return new Vector2(
                         input.X *= rand_expanded,
@@ -150,29 +150,69 @@ namespace Tablet_Area_Randomizer
 
         public FilterStage FilterStage => FilterStage.PostTranspose;
 
-        [Property("Timer Interval Min"), Unit("ms")]
+        [Property("Timer Interval Min"), Unit("ms"), DefaultPropertyValue(100f)]
         public float Time_interval_min { set; get; }
 
-        [Property("Timer Interval Max"), Unit("ms")]
+        [Property("Timer Interval Max"), Unit("ms"), DefaultPropertyValue(1000f)]
         public float Time_interval_max { set; get; }
 
-        [SliderProperty("Minumum Area Multiplier", 0, 100), Unit("%")]
-        public float Minimum_area_multiplier_raw { set; get; }
+        [SliderProperty("Minumum Area Multiplier", 0, 100), Unit("%"), DefaultPropertyValue(50f)]
+        public float Minimum_area_multiplier_raw
+        {
+            set
+            {
+                Minimum_area_multiplier_raw_clamp = Math.Clamp(value, 0, 100);
+            }
+            get => Minimum_area_multiplier_raw_clamp;
+        }
+        public float Minimum_area_multiplier_raw_clamp;
 
-        [SliderProperty("Randomizer Deviation Min", 0, 100), Unit("%")]
-        public float Randomizer_dev_min_raw { set; get; }
+        [SliderProperty("Randomizer Deviation Min", 0, 100), Unit("%"), DefaultPropertyValue(5f)]
+        public float Randomizer_dev_min_raw
+        {
+            set
+            {
+                Randomizer_dev_min_raw_clamp = Math.Clamp(value, 0, 100);
+            }
+            get => Randomizer_dev_min_raw_clamp;
+        }
+        public float Randomizer_dev_min_raw_clamp;
 
-        [SliderProperty("Randomizer Deviation Max", 0, 100), Unit("%")]
-        public float Randomizer_dev_max_raw { set; get; }
+        [SliderProperty("Randomizer Deviation Max", 0, 100), Unit("%"), DefaultPropertyValue(10f)]
+        public float Randomizer_dev_max_raw
+        {
+            set
+            {
+                Randomizer_dev_max_raw_clamp = Math.Clamp(value, Randomizer_dev_min_raw + 0.0000001f, 100);
+            }
+            get => Randomizer_dev_max_raw_clamp;
+        }
+        public float Randomizer_dev_max_raw_clamp;
 
         [BooleanProperty("Enable Split X/Y Multipliers", "")]
         public bool Split_xy { set; get; }
 
-        [SliderProperty("Minumum Area Multiplier X", 0, 100), Unit("%")]
-        public float Minimum_area_multiplier_x_raw { set; get; }
+        [SliderProperty("Minumum Area Multiplier X", 0, 100), Unit("%"), DefaultPropertyValue(50f)]
+        public float Minimum_area_multiplier_x_raw
+        {
+            set
+            {
+                Minimum_area_multiplier_x_raw_clamp = Math.Clamp(value, 0, 100);
+            }
+            get => Minimum_area_multiplier_x_raw_clamp;
+        }
+        public float Minimum_area_multiplier_x_raw_clamp;
 
-        [SliderProperty("Minumum Area Multiplier Y", 0, 100), Unit("%")]
-        public float Minimum_area_multiplier_y_raw { set; get; }
+        [SliderProperty("Minumum Area Multiplier Y", 0, 100), Unit("%"), DefaultPropertyValue(50f)]
+        public float Minimum_area_multiplier_y_raw
+        {
+            set
+            {
+                Minimum_area_multiplier_y_raw_clamp = Math.Clamp(value, 0, 100);
+            }
+            get => Minimum_area_multiplier_y_raw_clamp;
+        }
+        public float Minimum_area_multiplier_y_raw_clamp;
 
     }
 }
