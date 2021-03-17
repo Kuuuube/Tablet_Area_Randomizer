@@ -21,15 +21,19 @@ namespace Tablet_Area_Randomizer
         public Vector2 Randomizer(Vector2 input)
         {
 
-
             if (DateTime.Now.Subtract(start).TotalMilliseconds >= timer)
             {
                 if (Split_xy)
                 {
                     start = DateTime.Now;
 
+                    float Randomizer_dev_min = Randomizer_dev_min_raw / 100;
+                    float Randomizer_dev_max = Randomizer_dev_max_raw / 100;
+                    float Minimum_area_multiplier_x = Minimum_area_multiplier_x_raw / 100;
+                    float Minimum_area_multiplier_y = Minimum_area_multiplier_y_raw / 100;
+
                     float rand_new_x = (float)multiplier.NextDouble();
-                    float rand_range_x = rand_new_x * (Randomizer_dev_max - (-Randomizer_dev_min)) + (-Randomizer_dev_min);
+                    float rand_range_x = rand_new_x * (Randomizer_dev_max - (-Randomizer_dev_max)) + (-Randomizer_dev_max);
                     float rand_deviation_x = Math.Clamp(MathF.Abs(rand_range_x), Randomizer_dev_min, Randomizer_dev_max) * (MathF.Abs(rand_range_x) / rand_range_x);
                     float rand_limited_x = rand_old_y + rand_deviation_x;
                     float rand_clamp_x = Math.Clamp(MathF.Abs(rand_limited_x), Minimum_area_multiplier_x, 1);
@@ -37,10 +41,10 @@ namespace Tablet_Area_Randomizer
                     rand_old_x = rand_clamp_x;
 
                     float rand_new_y = (float)multiplier.NextDouble();
-                    float rand_range_y = rand_new_y * (Randomizer_dev_max - (-Randomizer_dev_min)) + (-Randomizer_dev_min);
+                    float rand_range_y = rand_new_y * (Randomizer_dev_max - (-Randomizer_dev_max)) + (-Randomizer_dev_max);
                     float rand_deviation_y = Math.Clamp(MathF.Abs(rand_range_y), Randomizer_dev_min, Randomizer_dev_max) * (MathF.Abs(rand_range_y) / rand_range_y);
                     float rand_limited_y = rand_old_y + rand_deviation_y;
-                    float rand_clamp_y = Math.Clamp(MathF.Abs(rand_limited_y), Minimum_area_multiplier_x, 1);
+                    float rand_clamp_y = Math.Clamp(MathF.Abs(rand_limited_y), Minimum_area_multiplier_y, 1);
                     float rand_expanded_y = 1 / rand_clamp_y;
                     rand_old_y = rand_clamp_y;
 
@@ -56,8 +60,12 @@ namespace Tablet_Area_Randomizer
                 {
                     start = DateTime.Now;
 
+                    float Randomizer_dev_min = Randomizer_dev_min_raw / 100;
+                    float Randomizer_dev_max = Randomizer_dev_max_raw / 100;
+                    float Minimum_area_multiplier = Minimum_area_multiplier_raw / 100;
+
                     float rand_new = (float)multiplier.NextDouble();
-                    float rand_range = rand_new * (Randomizer_dev_max - (-Randomizer_dev_min)) + (-Randomizer_dev_min);
+                    float rand_range = rand_new * (Randomizer_dev_max - (-Randomizer_dev_max)) + (-Randomizer_dev_max);
                     float rand_deviation = Math.Clamp(MathF.Abs(rand_range), Randomizer_dev_min, Randomizer_dev_max) * (MathF.Abs(rand_range) / rand_range);
                     float rand_limited = rand_old + rand_deviation;
                     float rand_clamp = Math.Clamp(MathF.Abs(rand_limited), Minimum_area_multiplier, 1);
@@ -152,28 +160,29 @@ namespace Tablet_Area_Randomizer
 
         public FilterStage FilterStage => FilterStage.PostTranspose;
 
-        [Property("Timer Interval Min ms")]
+        [Property("Timer Interval Min"), Unit("ms")]
         public float Time_interval_min { set; get; }
 
-        [Property("Timer Interval Max ms")]
+        [Property("Timer Interval Max"), Unit("ms")]
         public float Time_interval_max { set; get; }
 
-        [Property("Minumum Area Multiplier")]
-        public float Minimum_area_multiplier { set; get; }
+        [SliderProperty("Minumum Area Multiplier", 0, 100), Unit("%")]
+        public float Minimum_area_multiplier_raw { set; get; }
 
-        [Property("Randomizer Deviation Min")]
-        public float Randomizer_dev_min { set; get; }
+        [SliderProperty("Randomizer Deviation Min", 0, 100), Unit("%")]
+        public float Randomizer_dev_min_raw { set; get; }
 
-        [Property("Randomizer Deviation Max")]
-        public float Randomizer_dev_max { set; get; }
+        [SliderProperty("Randomizer Deviation Max", 0, 100), Unit("%")]
+        public float Randomizer_dev_max_raw { set; get; }
 
         [BooleanProperty("Enable Split X/Y Multipliers", "")]
         public bool Split_xy { set; get; }
 
-        [Property("Minumum Area Multiplier X")]
-        public float Minimum_area_multiplier_x { set; get; }
+        [SliderProperty("Minumum Area Multiplier X", 0, 100), Unit("%")]
+        public float Minimum_area_multiplier_x_raw { set; get; }
 
-        [Property("Minumum Area Multiplier Y")]
-        public float Minimum_area_multiplier_y { set; get; }
+        [SliderProperty("Minumum Area Multiplier Y", 0, 100), Unit("%")]
+        public float Minimum_area_multiplier_y_raw { set; get; }
+
     }
 }
