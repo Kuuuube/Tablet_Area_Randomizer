@@ -4,28 +4,27 @@ using OpenTabletDriver.Plugin.Output;
 using OpenTabletDriver.Plugin;
 using System;
 using System.Numerics;
+using OpenTabletDriver.Plugin.Timing;
 
 namespace Tablet_Area_Randomizer
 {
     [PluginName("Tablet Area Randomizer")]
     public class Tablet_Area_Randomizer : IFilter
     {
-        DateTime start = DateTime.Now;
-
-        private static readonly Random multiplier = new Random();
+        protected HPETDeltaStopwatch randomizerStopwatch = new HPETDeltaStopwatch(true);
+        private readonly Random multiplier = new Random();
         float rand_old = 1;
         float rand_old_x = 1;
         float rand_old_y = 1;
-        float timer;
+        float timer_interval_rand;
 
         public Vector2 Randomizer(Vector2 input)
         {
-
-            if (DateTime.Now.Subtract(start).TotalMilliseconds >= timer)
+            if (randomizerStopwatch.Elapsed.TotalMilliseconds >= timer_interval_rand)
             {
                 if (Split_xy)
                 {
-                    start = DateTime.Now;
+                    randomizerStopwatch.Restart();
 
                     float Randomizer_dev_min = Randomizer_dev_min_raw / 100;
                     float Randomizer_dev_max = Randomizer_dev_max_raw / 100;
@@ -48,8 +47,8 @@ namespace Tablet_Area_Randomizer
                     float rand_expanded_y = 1 / rand_clamp_y;
                     rand_old_y = rand_clamp_y;
 
-                    float timer_rand = (float)multiplier.NextDouble();
-                    timer = timer_rand * (Time_interval_max - Time_interval_min) + Time_interval_min;
+                    float timer_rand_raw = (float)multiplier.NextDouble();
+                    timer_interval_rand = timer_rand_raw * (Time_interval_max - Time_interval_min) + Time_interval_min;
 
                     return new Vector2(
                         input.X *= rand_expanded_x,
@@ -58,7 +57,7 @@ namespace Tablet_Area_Randomizer
                 }
                 else
                 {
-                    start = DateTime.Now;
+                    randomizerStopwatch.Restart();
 
                     float Randomizer_dev_min = Randomizer_dev_min_raw / 100;
                     float Randomizer_dev_max = Randomizer_dev_max_raw / 100;
@@ -72,8 +71,8 @@ namespace Tablet_Area_Randomizer
                     float rand_expanded = 1 / rand_clamp;
                     rand_old = rand_clamp;
 
-                    float timer_rand = (float)multiplier.NextDouble();
-                    timer = timer_rand * (Time_interval_max - Time_interval_min) + Time_interval_min;
+                    float timer_rand_raw = (float)multiplier.NextDouble();
+                    timer_interval_rand = timer_rand_raw * (Time_interval_max - Time_interval_min) + Time_interval_min;
 
                     return new Vector2(
                         input.X *= rand_expanded,
@@ -100,22 +99,17 @@ namespace Tablet_Area_Randomizer
             }
         }
 
-        protected static Vector2 ToUnit(Vector2 input)
+        protected static Vector2 ToCenter(Vector2 input)
         {
             if (Info.Driver.OutputMode is AbsoluteOutputMode absoluteOutputMode)
             {
-                var area = absoluteOutputMode.Input;
-                var size = new Vector2(area.Width, area.Height);
-                var half = size / 2;
                 var display = (Info.Driver.OutputMode as AbsoluteOutputMode)?.Output;
                 var offset = (Vector2)((Info.Driver.OutputMode as AbsoluteOutputMode)?.Output?.Position);
                 var shiftoffX = offset.X - (display.Width / 2);
                 var shiftoffY = offset.Y - (display.Height / 2);
-                var pxpermmw = display.Width / area.Width;
-                var pxpermmh = display.Height / area.Height;
                 return new Vector2(
-                    ((input.X - shiftoffX) / pxpermmw - half.X) / half.X,
-                    ((input.Y - shiftoffY) / pxpermmh - half.Y) / half.Y
+                    input.X - shiftoffX,
+                    input.Y - shiftoffY
                     );
             }
             else
@@ -124,22 +118,17 @@ namespace Tablet_Area_Randomizer
             }
         }
 
-        protected static Vector2 FromUnit(Vector2 input)
+        protected static Vector2 FromCenter(Vector2 input)
         {
             if (Info.Driver.OutputMode is AbsoluteOutputMode absoluteOutputMode)
             {
-                var area = absoluteOutputMode.Input;
-                var size = new Vector2(area.Width, area.Height);
-                var half = size / 2;
                 var display = (Info.Driver.OutputMode as AbsoluteOutputMode)?.Output;
                 var offset = (Vector2)((Info.Driver.OutputMode as AbsoluteOutputMode)?.Output?.Position);
                 var shiftoffX = offset.X - (display.Width / 2);
                 var shiftoffY = offset.Y - (display.Height / 2);
-                var pxpermmw = display.Width / area.Width;
-                var pxpermmh = display.Height / area.Height;
                 return new Vector2(
-                    ((input.X * half.X) + half.X) * pxpermmw + shiftoffX,
-                    ((input.Y * half.Y) + half.Y) * pxpermmh + shiftoffY
+                    input.X + shiftoffX,
+                    input.Y + shiftoffY
                 );
             }
             else
@@ -150,13 +139,14 @@ namespace Tablet_Area_Randomizer
 
         protected static Vector2 Clamp(Vector2 input)
         {
+            var display = (Info.Driver.OutputMode as AbsoluteOutputMode)?.Output;
             return new Vector2(
-            Math.Clamp(input.X, -1, 1),
-            Math.Clamp(input.Y, -1, 1)
+            Math.Clamp(input.X, -display.Width, display.Width),
+            Math.Clamp(input.Y, -display.Height, display.Height)
             );
         }
 
-        public Vector2 Filter(Vector2 input) => FromUnit(Clamp(Randomizer(ToUnit(input))));
+        public Vector2 Filter(Vector2 input) => FromCenter(Clamp(Randomizer(ToCenter(input))));
 
         public FilterStage FilterStage => FilterStage.PostTranspose;
 
