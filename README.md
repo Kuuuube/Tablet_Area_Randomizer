@@ -23,7 +23,8 @@
 <br>
 
 ## Example Settings:
-
-![](https://raw.githubusercontent.com/Kuuuube/Tablet_Area_Randomizer/main/example_settings.png)
+<p align="middle">
+  <img src="https://raw.githubusercontent.com/Kuuuube/Tablet_Area_Randomizer/main/example_settings.png" align="middle"/>
+</p>
 
 These settings randomize at a rate between 100ms and 1000ms. The smallest area that can be generated with them is 50% of the current area size and it will change the area size between 5% and 10% every generation.
