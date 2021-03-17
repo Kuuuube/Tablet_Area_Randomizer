@@ -29,23 +29,27 @@ namespace Tablet_Area_Randomizer
                     start = DateTime.Now;
 
                     float rand_new_x = (float)multiplier.NextDouble();
-                    float rand_deviation_x = rand_new_x * (Randomizer_dev_max - Randomizer_dev_min) + Randomizer_dev_min;
-                    float rand_limited_x = rand_old + rand_deviation_x;
+                    float rand_range_x = rand_new_x * (Randomizer_dev_max - (-Randomizer_dev_min)) + (-Randomizer_dev_min);
+                    float rand_deviation_x = Math.Clamp(MathF.Abs(rand_range_x), Randomizer_dev_min, Randomizer_dev_max) * (MathF.Abs(rand_range_x) / rand_range_x);
+                    float rand_limited_x = rand_old_y + rand_deviation_x;
                     float rand_clamp_x = Math.Clamp(MathF.Abs(rand_limited_x), Minimum_area_multiplier_x, 1);
+                    float rand_expanded_x = 1 / rand_clamp_x;
                     rand_old_x = rand_clamp_x;
 
                     float rand_new_y = (float)multiplier.NextDouble();
-                    float rand_deviation_y = rand_new_y * (Randomizer_dev_max - Randomizer_dev_min) + Randomizer_dev_min;
-                    float rand_limited_y = rand_old + rand_deviation_y;
+                    float rand_range_y = rand_new_y * (Randomizer_dev_max - (-Randomizer_dev_min)) + (-Randomizer_dev_min);
+                    float rand_deviation_y = Math.Clamp(MathF.Abs(rand_range_y), Randomizer_dev_min, Randomizer_dev_max) * (MathF.Abs(rand_range_y) / rand_range_y);
+                    float rand_limited_y = rand_old_y + rand_deviation_y;
                     float rand_clamp_y = Math.Clamp(MathF.Abs(rand_limited_y), Minimum_area_multiplier_x, 1);
+                    float rand_expanded_y = 1 / rand_clamp_y;
                     rand_old_y = rand_clamp_y;
 
                     float timer_rand = (float)multiplier.NextDouble();
                     timer = timer_rand * (Time_interval_max - Time_interval_min) + Time_interval_min;
 
                     return new Vector2(
-                        input.X *= rand_clamp_x,
-                        input.Y *= rand_clamp_y
+                        input.X *= rand_expanded_x,
+                        input.Y *= rand_expanded_y
                     );
                 }
                 else
@@ -53,17 +57,19 @@ namespace Tablet_Area_Randomizer
                     start = DateTime.Now;
 
                     float rand_new = (float)multiplier.NextDouble();
-                    float rand_deviation = rand_new * (Randomizer_dev_max - Randomizer_dev_min) + Randomizer_dev_min;
+                    float rand_range = rand_new * (Randomizer_dev_max - (-Randomizer_dev_min)) + (-Randomizer_dev_min);
+                    float rand_deviation = Math.Clamp(MathF.Abs(rand_range), Randomizer_dev_min, Randomizer_dev_max) * (MathF.Abs(rand_range) / rand_range);
                     float rand_limited = rand_old + rand_deviation;
                     float rand_clamp = Math.Clamp(MathF.Abs(rand_limited), Minimum_area_multiplier, 1);
+                    float rand_expanded = 1 / rand_clamp;
                     rand_old = rand_clamp;
 
                     float timer_rand = (float)multiplier.NextDouble();
                     timer = timer_rand * (Time_interval_max - Time_interval_min) + Time_interval_min;
 
                     return new Vector2(
-                        input.X *= rand_clamp,
-                        input.Y *= rand_clamp
+                        input.X *= rand_expanded,
+                        input.Y *= rand_expanded
                     );
                 }
             }
@@ -72,15 +78,15 @@ namespace Tablet_Area_Randomizer
                 if (Split_xy)
                 {
                     return new Vector2(
-                    input.X *= rand_old_x,
-                    input.Y *= rand_old_y
+                    input.X *= 1 / rand_old_x,
+                    input.Y *= 1 / rand_old_y
                     );
                 }
                 else
                 {
                     return new Vector2(
-                    input.X *= rand_old,
-                    input.Y *= rand_old
+                    input.X *= 1 / rand_old,
+                    input.Y *= 1 / rand_old
                     );
                 }
             }
