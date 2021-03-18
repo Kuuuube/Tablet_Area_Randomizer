@@ -8,6 +8,8 @@
 
 **Timer Interval Max:** The maximum time before the next area change.
 
+**Maximum Area Multiplier:** This is automatically set to your current area and cannot be changed within the plugin. It will always equal 100% to avoid mapping issues.
+
 **Minumum Area Multiplier:** The smallest multiplier that will be used on the area. This option is not used when **Split X/Y Multipliers** is enabled.
 
 **Randomizer Deviation Min:** The minimum amount of change in the next generated area.
