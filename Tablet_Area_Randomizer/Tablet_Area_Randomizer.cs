@@ -150,13 +150,20 @@ namespace Tablet_Area_Randomizer
 
         public FilterStage FilterStage => FilterStage.PostTranspose;
 
-        [Property("Timer Interval Min"), Unit("ms"), DefaultPropertyValue(100f)]
+        [Property("Timer Interval Min"), Unit("ms"), DefaultPropertyValue(100f), ToolTip
+            ("Tablet Area Randomizer:\n\n" +
+            "Timer Interval Min: The minimum time before the next area change.")]
         public float Time_interval_min { set; get; }
 
-        [Property("Timer Interval Max"), Unit("ms"), DefaultPropertyValue(1000f)]
+        [Property("Timer Interval Max"), Unit("ms"), DefaultPropertyValue(1000f), ToolTip
+            ("Tablet Area Randomizer:\n\n" +
+            "Timer Interval Max: The maximum time before the next area change.")]
         public float Time_interval_max { set; get; }
 
-        [SliderProperty("Minumum Area Multiplier", 0, 100), Unit("%"), DefaultPropertyValue(50f)]
+        [Property("Minumum Area Size"), Unit("%"), DefaultPropertyValue(50f), ToolTip
+            ("Tablet Area Randomizer:\n\n" +
+            "Minumum Area Size: The smallest percent of the current area that can be generated.\n" +
+            "This option is not used when Enable Split Width/Height is enabled.")]
         public float Minimum_area_multiplier_raw
         {
             set
@@ -167,7 +174,9 @@ namespace Tablet_Area_Randomizer
         }
         public float Minimum_area_multiplier_raw_clamp;
 
-        [SliderProperty("Randomizer Deviation Min", 0, 100), Unit("%"), DefaultPropertyValue(5f)]
+        [Property("Randomizer Deviation Min"), Unit("%"), DefaultPropertyValue(5f), ToolTip
+            ("Tablet Area Randomizer:\n\n" +
+            "Randomizer Deviation Min: The minimum percent change for the next generated area.")]
         public float Randomizer_dev_min_raw
         {
             set
@@ -178,7 +187,9 @@ namespace Tablet_Area_Randomizer
         }
         public float Randomizer_dev_min_raw_clamp;
 
-        [SliderProperty("Randomizer Deviation Max", 0, 100), Unit("%"), DefaultPropertyValue(10f)]
+        [Property("Randomizer Deviation Max"), Unit("%"), DefaultPropertyValue(10f), ToolTip
+            ("Tablet Area Randomizer:\n\n" +
+            "Randomizer Deviation Max: The maximum percent change for the next generated area.")]
         public float Randomizer_dev_max_raw
         {
             set
@@ -189,10 +200,15 @@ namespace Tablet_Area_Randomizer
         }
         public float Randomizer_dev_max_raw_clamp;
 
-        [BooleanProperty("Enable Split X/Y Multipliers", "")]
+        [BooleanProperty("Enable Split Width/Height", ""), ToolTip
+            ("Tablet Area Randomizer:\n\n" +
+            "Enable Split Width/Height: Allows for width and height to be generated separately. This will result in randomized area aspect ratios.")]
         public bool Split_xy { set; get; }
 
-        [SliderProperty("Minumum Area Multiplier X", 0, 100), Unit("%"), DefaultPropertyValue(50f)]
+        [Property("Minumum Area Multiplier Width"), Unit("%"), DefaultPropertyValue(50f), ToolTip
+            ("Tablet Area Randomizer:\n\n" +
+            "Minumum Area Multiplier Width: The smallest percent of the current area's width that can be generated.\n" +
+            "This option is only used when Enable Split Width/Height is enabled.")]
         public float Minimum_area_multiplier_x_raw
         {
             set
@@ -203,7 +219,10 @@ namespace Tablet_Area_Randomizer
         }
         public float Minimum_area_multiplier_x_raw_clamp;
 
-        [SliderProperty("Minumum Area Multiplier Y", 0, 100), Unit("%"), DefaultPropertyValue(50f)]
+        [Property("Minumum Area Multiplier Height"), Unit("%"), DefaultPropertyValue(50f), ToolTip
+            ("Tablet Area Randomizer:\n\n" +
+            "Minumum Area Multiplier Height: The smallest percent of the current area's height that can be generated.\n" +
+            "This option is only used when Enable Split Width/Height is enabled.")]
         public float Minimum_area_multiplier_y_raw
         {
             set

@@ -8,19 +8,19 @@
 
 **Timer Interval Max:** The maximum time before the next area change.
 
-**Maximum Area Multiplier:** This is automatically set to your current area and cannot be changed within the plugin. It will always equal 100% to avoid mapping issues.
+**Maximum Area Size:** This is automatically set to your current area and cannot be changed within the plugin. It will always equal 100% to avoid mapping issues.
 
-**Minumum Area Multiplier:** The smallest multiplier that will be used on the area. This option is not used when **Split X/Y Multipliers** is enabled.
+**Minumum Area Size:** The smallest percent of the current area that can be generated. This option is not used when **Enable Split Width/Height** is enabled.
 
-**Randomizer Deviation Min:** The minimum amount of change in the next generated area.
+**Randomizer Deviation Min:** The minimum percent change for the next generated area.
 
-**Randomizer Deviation Max:** The maximum amount of change in the next generated area.
+**Randomizer Deviation Max:** The maximum percent change for the next generated area.
 
-**Enable Split X/Y Multipliers:** Allows for differing X and Y multipliers. This will result in randomized area aspect ratios.
+**Enable Split Width/Height:** Allows for width and height to be generated separately. This will result in randomized area aspect ratios.
 
-**Minumum Area Multiplier X:** The smallest multiplier that will be used on the area's X coordinate. This option is only used when **Split X/Y Multipliers** is enabled.
+**Minumum Area Width:** The smallest percent of the current area's width that can be generated. This option is only used when **Enable Split Width/Height** is enabled.
 
-**Minumum Area Multiplier Y:** The smallest multiplier that will be used on the area's Y coordinate. This option is only used when **Split X/Y Multipliers** is enabled.
+**Minumum Area Height:** The smallest percent of the current area's height that can be generated. This option is only used when **Enable Split Width/Height** is enabled.
 
 <br>
 
