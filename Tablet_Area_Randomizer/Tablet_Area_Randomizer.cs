@@ -9,7 +9,7 @@ using OpenTabletDriver.Plugin.Timing;
 namespace Tablet_Area_Randomizer
 {
     [PluginName("Tablet Area Randomizer")]
-    public class Tablet_Area_Randomizer : IFilter
+    public class Tablet_Area_Randomizer : IPositionedPipelineElement<IDeviceReport>
     {
         protected HPETDeltaStopwatch randomizerStopwatch = new HPETDeltaStopwatch(true);
         private readonly Random multiplier = new Random();
@@ -146,9 +146,22 @@ namespace Tablet_Area_Randomizer
             );
         }
 
+        public event Action<IDeviceReport> Emit;
+
+        public void Consume(IDeviceReport value)
+        {
+            if (value is ITabletReport report)
+            {
+                report.Position = Filter(report.Position);
+                value = report;
+            }
+
+            Emit?.Invoke(value);
+        }
+
         public Vector2 Filter(Vector2 input) => FromCenter(Clamp(Randomizer(ToCenter(input))));
 
-        public FilterStage FilterStage => FilterStage.PostTranspose;
+        public PipelinePosition Position => PipelinePosition.PostTransform;
 
         [Property("Timer Interval Min"), Unit("ms"), DefaultPropertyValue(100f), ToolTip
             ("Tablet Area Randomizer:\n\n" +
