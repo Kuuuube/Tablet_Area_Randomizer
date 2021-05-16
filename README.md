@@ -1,4 +1,4 @@
-# Tablet Area Randomizer Plugin for [OpenTabletDriver](https://github.com/OpenTabletDriver/OpenTabletDriver)
+# Tablet Area Randomizer Plugin for [OpenTabletDriver](https://github.com/OpenTabletDriver/OpenTabletDriver) [![Total Download Count](https://img.shields.io/github/downloads/Kuuuube/Tablet_Area_Randomizer/total.svg)](https://github.com/Kuuuube/Tablet_Area_Randomizer/releases/latest)
 
 Randomizes tablet area within given parameters.
 
