@@ -9,7 +9,7 @@ using OpenTabletDriver.Plugin.Timing;
 namespace Tablet_Area_Randomizer
 {
     [PluginName("Tablet Area Randomizer")]
-    public class Tablet_Area_Randomizer : IPositionedPipelineElement<IDeviceReport>
+    public class Tablet_Area_Randomizer : Tablet_Area_Randomizer_Base
     {
         protected HPETDeltaStopwatch randomizerStopwatch = new HPETDeltaStopwatch(true);
         private readonly Random multiplier = new Random();
@@ -99,56 +99,9 @@ namespace Tablet_Area_Randomizer
             }
         }
 
-        protected static Vector2 ToCenter(Vector2 input)
-        {
-            if (Info.Driver.OutputMode is AbsoluteOutputMode absoluteOutputMode)
-            {
-                var display = (Info.Driver.OutputMode as AbsoluteOutputMode)?.Output;
-                var offset = (Vector2)((Info.Driver.OutputMode as AbsoluteOutputMode)?.Output?.Position);
-                var shiftoffX = offset.X - (display.Width / 2);
-                var shiftoffY = offset.Y - (display.Height / 2);
-                return new Vector2(
-                    input.X - shiftoffX,
-                    input.Y - shiftoffY
-                    );
-            }
-            else
-            {
-                return default;
-            }
-        }
+        public override event Action<IDeviceReport> Emit;
 
-        protected static Vector2 FromCenter(Vector2 input)
-        {
-            if (Info.Driver.OutputMode is AbsoluteOutputMode absoluteOutputMode)
-            {
-                var display = (Info.Driver.OutputMode as AbsoluteOutputMode)?.Output;
-                var offset = (Vector2)((Info.Driver.OutputMode as AbsoluteOutputMode)?.Output?.Position);
-                var shiftoffX = offset.X - (display.Width / 2);
-                var shiftoffY = offset.Y - (display.Height / 2);
-                return new Vector2(
-                    input.X + shiftoffX,
-                    input.Y + shiftoffY
-                );
-            }
-            else
-            {
-                return default;
-            }
-        }
-
-        protected static Vector2 Clamp(Vector2 input)
-        {
-            var display = (Info.Driver.OutputMode as AbsoluteOutputMode)?.Output;
-            return new Vector2(
-            Math.Clamp(input.X, -display.Width, display.Width),
-            Math.Clamp(input.Y, -display.Height, display.Height)
-            );
-        }
-
-        public event Action<IDeviceReport> Emit;
-
-        public void Consume(IDeviceReport value)
+        public override void Consume(IDeviceReport value)
         {
             if (value is ITabletReport report)
             {
@@ -159,9 +112,9 @@ namespace Tablet_Area_Randomizer
             Emit?.Invoke(value);
         }
 
-        public Vector2 Filter(Vector2 input) => FromCenter(Clamp(Randomizer(ToCenter(input))));
+        public Vector2 Filter(Vector2 input) => FromUnit(Clamp(Randomizer(ToUnit(input))));
 
-        public PipelinePosition Position => PipelinePosition.PostTransform;
+        public override PipelinePosition Position => PipelinePosition.PostTransform;
 
         [Property("Timer Interval Min"), Unit("ms"), DefaultPropertyValue(100f), ToolTip
             ("Tablet Area Randomizer:\n\n" +
