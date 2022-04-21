@@ -4,8 +4,6 @@ Randomizes tablet area within given parameters.
 
 ## Explanation of the Values:
 
-<br>
-
 **Timer Interval Min:** The minimum time before the next area change.
 
 **Timer Interval Max:** The maximum time before the next area change.
@@ -23,8 +21,6 @@ Randomizes tablet area within given parameters.
 **Minumum Area Width:** The smallest percent of the current area's width that can be generated. This option is only used when **Enable Split Width/Height** is enabled.
 
 **Minumum Area Height:** The smallest percent of the current area's height that can be generated. This option is only used when **Enable Split Width/Height** is enabled.
-
-<br>
 
 ## Example Settings:
 <p align="middle">
