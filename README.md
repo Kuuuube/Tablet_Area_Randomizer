@@ -2,7 +2,7 @@
 
 Randomizes tablet area within given parameters.
 
-## Explanation of the Values:
+## Tablet Area Randomizer:
 
 **Timer Interval Min:** The minimum time before the next area change.
 
