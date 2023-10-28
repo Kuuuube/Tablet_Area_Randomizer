@@ -15,7 +15,7 @@ namespace Tablet_Area_Randomizer
         Vector2 rand_old = new Vector2();
         float timer_interval_rand;
 
-        public float SignlessClamp(float input, float min, float max)
+        public static float SignlessClamp(float input, float min, float max)
         {
             int sign = input > 0 ? 1 : -1;
             return Math.Clamp(Math.Abs(input), Math.Abs(min), Math.Abs(max)) * sign;
@@ -27,19 +27,19 @@ namespace Tablet_Area_Randomizer
             {
                 randomizerStopwatch.Restart();
 
-                Vector2 Randomizer_dev_min_max = new Vector2(Randomizer_dev_min, Randomizer_dev_max);
+                Vector2 randomizer_deviation = new Vector2(randomizer_deviation_min, randomizer_deviation_max);
 
-                Vector2 Minimum_area_multiplier = Split_xy ? new Vector2(Minimum_area_multiplier_x, Minimum_area_multiplier_y) : new Vector2(Minimum_area_multiplier_xy, Minimum_area_multiplier_xy);
+                Vector2 Minimum_area_multiplier = split_xy ? new Vector2(minimum_area_multiplier_x, minimum_area_multiplier_y) : new Vector2(minimum_area_multiplier_xy, minimum_area_multiplier_xy);
 
                 Vector2 rands_xy = new Vector2((float)multiplier.NextDouble(), (float)multiplier.NextDouble());
-                Vector2 rand_xy = Split_xy ? new Vector2(rands_xy.X, rands_xy.Y) : new Vector2(rands_xy.X, rands_xy.X);
+                Vector2 rand_xy = split_xy ? new Vector2(rands_xy.X, rands_xy.Y) : new Vector2(rands_xy.X, rands_xy.X);
 
-                Vector2 rand_range = new Vector2(SignlessClamp(rand_xy.X * (Randomizer_dev_min_max.Y * 2) - Randomizer_dev_min_max.Y, Randomizer_dev_min_max.X, Randomizer_dev_min_max.Y), SignlessClamp(rand_xy.Y * (Randomizer_dev_min_max.Y * 2) - Randomizer_dev_min_max.Y, Randomizer_dev_min_max.X, Randomizer_dev_min_max.Y));
+                Vector2 rand_range = new Vector2(SignlessClamp(rand_xy.X * (randomizer_deviation.Y * 2) - randomizer_deviation.Y, randomizer_deviation.X, randomizer_deviation.Y), SignlessClamp(rand_xy.Y * (randomizer_deviation.Y * 2) - randomizer_deviation.Y, randomizer_deviation.X, randomizer_deviation.Y));
                 Vector2 rand_clamp = new Vector2(Math.Clamp(rand_old.X + rand_range.X, Minimum_area_multiplier.X, 1), Math.Clamp(rand_old.Y + rand_range.Y, Minimum_area_multiplier.Y, 1));
 
                 rand_old = new Vector2(rand_clamp.X, rand_clamp.Y);
 
-                timer_interval_rand = (float)multiplier.NextDouble() * (Time_interval_max - Time_interval_min) + Time_interval_min;
+                timer_interval_rand = (float)multiplier.NextDouble() * (time_interval_max - time_interval_min) + time_interval_min;
             }
                 
             return input *= rand_old;
@@ -65,12 +65,12 @@ namespace Tablet_Area_Randomizer
         [Property("Timer Interval Min"), Unit("ms"), DefaultPropertyValue(100f), ToolTip
             ("Tablet Area Randomizer:\n\n" +
             "Timer Interval Min: The minimum time before the next area change.")]
-        public float Time_interval_min { set; get; }
+        public float time_interval_min { set; get; }
 
         [Property("Timer Interval Max"), Unit("ms"), DefaultPropertyValue(1000f), ToolTip
             ("Tablet Area Randomizer:\n\n" +
             "Timer Interval Max: The maximum time before the next area change.")]
-        public float Time_interval_max { set; get; }
+        public float time_interval_max { set; get; }
 
         [Property("Minumum Area Size"), Unit("%"), DefaultPropertyValue(50f), ToolTip
             ("Tablet Area Randomizer:\n\n" +
@@ -80,11 +80,11 @@ namespace Tablet_Area_Randomizer
         {
             set
             {
-                Minimum_area_multiplier_xy = Math.Clamp(value, 0, 100) / 100;
+                minimum_area_multiplier_xy = Math.Clamp(value, 0, 100) / 100;
             }
-            get => Minimum_area_multiplier_xy;
+            get => minimum_area_multiplier_xy;
         }
-        public float Minimum_area_multiplier_xy;
+        public float minimum_area_multiplier_xy;
 
         [Property("Randomizer Deviation Min"), Unit("%"), DefaultPropertyValue(5f), ToolTip
             ("Tablet Area Randomizer:\n\n" +
@@ -93,11 +93,11 @@ namespace Tablet_Area_Randomizer
         {
             set
             {
-                Randomizer_dev_min = Math.Clamp(value, 0, 100) / 100;
+                randomizer_deviation_min = Math.Clamp(value, 0, 100) / 100;
             }
-            get => Randomizer_dev_min;
+            get => randomizer_deviation_min;
         }
-        public float Randomizer_dev_min;
+        public float randomizer_deviation_min;
 
         [Property("Randomizer Deviation Max"), Unit("%"), DefaultPropertyValue(10f), ToolTip
             ("Tablet Area Randomizer:\n\n" +
@@ -106,43 +106,43 @@ namespace Tablet_Area_Randomizer
         {
             set
             {
-                Randomizer_dev_max = Math.Clamp(value, Randomizer_dev_min_raw + 0.0000001f, 100) / 100;
+                randomizer_deviation_max = Math.Clamp(value, Randomizer_dev_min_raw + 0.0000001f, 100) / 100;
             }
-            get => Randomizer_dev_max;
+            get => randomizer_deviation_max;
         }
-        public float Randomizer_dev_max;
+        public float randomizer_deviation_max;
 
         [BooleanProperty("Enable Split Width/Height", ""), ToolTip
             ("Tablet Area Randomizer:\n\n" +
             "Enable Split Width/Height: Allows for width and height to be generated separately. This will result in randomized area aspect ratios.")]
-        public bool Split_xy { set; get; }
+        public bool split_xy { set; get; }
 
         [Property("Minumum Area Multiplier Width"), Unit("%"), DefaultPropertyValue(50f), ToolTip
             ("Tablet Area Randomizer:\n\n" +
             "Minumum Area Multiplier Width: The smallest percent of the current area's width that can be generated.\n" +
             "This option is only used when Enable Split Width/Height is enabled.")]
-        public float Minimum_area_multiplier_x_raw
+        public float minimum_area_multiplier_x_raw
         {
             set
             {
-                Minimum_area_multiplier_x = Math.Clamp(value, 0, 100) / 100;
+                minimum_area_multiplier_x = Math.Clamp(value, 0, 100) / 100;
             }
-            get => Minimum_area_multiplier_x;
+            get => minimum_area_multiplier_x;
         }
-        public float Minimum_area_multiplier_x;
+        public float minimum_area_multiplier_x;
 
         [Property("Minumum Area Multiplier Height"), Unit("%"), DefaultPropertyValue(50f), ToolTip
             ("Tablet Area Randomizer:\n\n" +
             "Minumum Area Multiplier Height: The smallest percent of the current area's height that can be generated.\n" +
             "This option is only used when Enable Split Width/Height is enabled.")]
-        public float Minimum_area_multiplier_y_raw
+        public float minimum_area_multiplier_y_raw
         {
             set
             {
-                Minimum_area_multiplier_y = Math.Clamp(value, 0, 100) / 100;
+                minimum_area_multiplier_y = Math.Clamp(value, 0, 100) / 100;
             }
-            get => Minimum_area_multiplier_y;
+            get => minimum_area_multiplier_y;
         }
-        public float Minimum_area_multiplier_y;
+        public float minimum_area_multiplier_y;
     }
 }
