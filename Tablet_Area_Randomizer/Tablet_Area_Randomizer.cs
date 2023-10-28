@@ -11,7 +11,7 @@ namespace Tablet_Area_Randomizer
     public class Tablet_Area_Randomizer : Tablet_Area_Randomizer_Base
     {
         protected HPETDeltaStopwatch randomizerStopwatch = new HPETDeltaStopwatch(true);
-        private readonly Random multiplier = new Random();
+        private readonly Random random_generator = new Random();
         Vector2 current_multiplier = new Vector2(1, 1);
         float timer_interval_rand;
 
@@ -22,7 +22,7 @@ namespace Tablet_Area_Randomizer
                 Vector2 randomizer_deviation = new Vector2(randomizer_deviation_min, randomizer_deviation_max);
                 Vector2 minimum_area_multiplier = split_xy ? new Vector2(minimum_area_multiplier_x, minimum_area_multiplier_y) : new Vector2(minimum_area_multiplier_xy, minimum_area_multiplier_xy);
 
-                Vector2 random_vector2 = new Vector2((float)multiplier.NextDouble(), (float)multiplier.NextDouble());
+                Vector2 random_vector2 = new Vector2((float)random_generator.NextDouble(), (float)random_generator.NextDouble());
                 random_vector2 = split_xy ? new Vector2(random_vector2.X, random_vector2.Y) : new Vector2(random_vector2.X, random_vector2.X);
 
                 Vector2 rand_range = new Vector2(
@@ -36,7 +36,7 @@ namespace Tablet_Area_Randomizer
                 );
 
                 randomizerStopwatch.Restart();
-                timer_interval_rand = (float)multiplier.NextDouble() * (time_interval_max - time_interval_min) + time_interval_min;
+                timer_interval_rand = (float)random_generator.NextDouble() * (time_interval_max - time_interval_min) + time_interval_min;
             }
 
             return input /= current_multiplier;
