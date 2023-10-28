@@ -1,7 +1,6 @@
 ﻿using OpenTabletDriver.Plugin.Attributes;
 using OpenTabletDriver.Plugin.Tablet;
 using OpenTabletDriver.Plugin.Output;
-using OpenTabletDriver.Plugin;
 using System;
 using System.Numerics;
 using OpenTabletDriver.Plugin.Timing;
@@ -13,90 +12,37 @@ namespace Tablet_Area_Randomizer
     {
         protected HPETDeltaStopwatch randomizerStopwatch = new HPETDeltaStopwatch(true);
         private readonly Random multiplier = new Random();
-        float rand_old = 1;
-        float rand_old_x = 1;
-        float rand_old_y = 1;
+        Vector2 rand_old = new Vector2();
         float timer_interval_rand;
+
+        public float SignlessClamp(float input, float min, float max)
+        {
+            int sign = input > 0 ? 1 : -1;
+            return Math.Clamp(Math.Abs(input), Math.Abs(min), Math.Abs(max)) * sign;
+        }
 
         public Vector2 Randomizer(Vector2 input)
         {
             if (randomizerStopwatch.Elapsed.TotalMilliseconds >= timer_interval_rand)
             {
-                if (Split_xy)
-                {
-                    randomizerStopwatch.Restart();
+                randomizerStopwatch.Restart();
 
-                    float Randomizer_dev_min = Randomizer_dev_min_raw / 100;
-                    float Randomizer_dev_max = Randomizer_dev_max_raw / 100;
-                    float Minimum_area_multiplier_x = Minimum_area_multiplier_x_raw / 100;
-                    float Minimum_area_multiplier_y = Minimum_area_multiplier_y_raw / 100;
+                Vector2 Randomizer_dev_min_max = new Vector2(Randomizer_dev_min_raw / 100, Randomizer_dev_max_raw / 100);
 
-                    float rand_new_x = (float)multiplier.NextDouble();
-                    float rand_range_x = rand_new_x * (Randomizer_dev_max - (-Randomizer_dev_max)) + (-Randomizer_dev_max);
-                    float rand_deviation_x = Math.Clamp(MathF.Abs(rand_range_x), Randomizer_dev_min, Randomizer_dev_max) * (MathF.Abs(rand_range_x) / rand_range_x);
-                    float rand_limited_x = rand_old_y + rand_deviation_x;
-                    float rand_clamp_x = Math.Clamp(MathF.Abs(rand_limited_x), Minimum_area_multiplier_x, 1);
-                    float rand_expanded_x = 1 / rand_clamp_x;
-                    rand_old_x = rand_clamp_x;
+                Vector2 Minimum_area_multiplier = Split_xy ? new Vector2(Minimum_area_multiplier_x_raw / 100, Minimum_area_multiplier_y_raw / 100) : new Vector2(Minimum_area_multiplier_raw / 100, Minimum_area_multiplier_raw / 100);
 
-                    float rand_new_y = (float)multiplier.NextDouble();
-                    float rand_range_y = rand_new_y * (Randomizer_dev_max - (-Randomizer_dev_max)) + (-Randomizer_dev_max);
-                    float rand_deviation_y = Math.Clamp(MathF.Abs(rand_range_y), Randomizer_dev_min, Randomizer_dev_max) * (MathF.Abs(rand_range_y) / rand_range_y);
-                    float rand_limited_y = rand_old_y + rand_deviation_y;
-                    float rand_clamp_y = Math.Clamp(MathF.Abs(rand_limited_y), Minimum_area_multiplier_y, 1);
-                    float rand_expanded_y = 1 / rand_clamp_y;
-                    rand_old_y = rand_clamp_y;
+                Vector2 rands_xy = new Vector2((float)multiplier.NextDouble(), (float)multiplier.NextDouble());
+                Vector2 rand_xy = Split_xy ? new Vector2(rands_xy.X, rands_xy.Y) : new Vector2(rands_xy.X, rands_xy.X);
 
-                    float timer_rand = (float)multiplier.NextDouble();
-                    timer_interval_rand = timer_rand * (Time_interval_max - Time_interval_min) + Time_interval_min;
+                Vector2 rand_range = new Vector2(SignlessClamp(rand_xy.X * (Randomizer_dev_min_max.Y * 2) - Randomizer_dev_min_max.Y, Randomizer_dev_min_max.X, Randomizer_dev_min_max.Y), SignlessClamp(rand_xy.Y * (Randomizer_dev_min_max.Y * 2) - Randomizer_dev_min_max.Y, Randomizer_dev_min_max.X, Randomizer_dev_min_max.Y));
+                Vector2 rand_clamp = new Vector2(Math.Clamp(rand_old.X + rand_range.X, Minimum_area_multiplier.X, 1), Math.Clamp(rand_old.Y + rand_range.Y, Minimum_area_multiplier.Y, 1));
 
-                    return new Vector2(
-                        input.X *= rand_expanded_x,
-                        input.Y *= rand_expanded_y
-                    );
-                }
-                else
-                {
-                    randomizerStopwatch.Restart();
+                rand_old = new Vector2(rand_clamp.X, rand_clamp.Y);
 
-                    float Randomizer_dev_min = Randomizer_dev_min_raw / 100;
-                    float Randomizer_dev_max = Randomizer_dev_max_raw / 100;
-                    float Minimum_area_multiplier = Minimum_area_multiplier_raw / 100;
-
-                    float rand_new = (float)multiplier.NextDouble();
-                    float rand_range = rand_new * (Randomizer_dev_max - (-Randomizer_dev_max)) + (-Randomizer_dev_max);
-                    float rand_deviation = Math.Clamp(MathF.Abs(rand_range), Randomizer_dev_min, Randomizer_dev_max) * (MathF.Abs(rand_range) / rand_range);
-                    float rand_limited = rand_old + rand_deviation;
-                    float rand_clamp = Math.Clamp(MathF.Abs(rand_limited), Minimum_area_multiplier, 1);
-                    float rand_expanded = 1 / rand_clamp;
-                    rand_old = rand_clamp;
-
-                    float timer_rand = (float)multiplier.NextDouble();
-                    timer_interval_rand = timer_rand * (Time_interval_max - Time_interval_min) + Time_interval_min;
-
-                    return new Vector2(
-                        input.X *= rand_expanded,
-                        input.Y *= rand_expanded
-                    );
-                }
+                timer_interval_rand = (float)multiplier.NextDouble() * (Time_interval_max - Time_interval_min) + Time_interval_min;
             }
-            else
-            {
-                if (Split_xy)
-                {
-                    return new Vector2(
-                    input.X *= 1 / rand_old_x,
-                    input.Y *= 1 / rand_old_y
-                    );
-                }
-                else
-                {
-                    return new Vector2(
-                    input.X *= 1 / rand_old,
-                    input.Y *= 1 / rand_old
-                    );
-                }
-            }
+                
+            return input *= rand_old;
         }
 
         public override event Action<IDeviceReport> Emit;
@@ -198,6 +144,5 @@ namespace Tablet_Area_Randomizer
             get => Minimum_area_multiplier_y_raw_clamp;
         }
         public float Minimum_area_multiplier_y_raw_clamp;
-
     }
 }
