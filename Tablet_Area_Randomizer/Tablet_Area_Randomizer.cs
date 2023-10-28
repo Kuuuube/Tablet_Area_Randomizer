@@ -12,7 +12,7 @@ namespace Tablet_Area_Randomizer
     {
         protected HPETDeltaStopwatch randomizerStopwatch = new HPETDeltaStopwatch(true);
         private readonly Random multiplier = new Random();
-        Vector2 rand_old = new Vector2();
+        Vector2 current_multiplier = new Vector2();
         float timer_interval_rand;
 
         public static float SignlessClamp(float input, float min, float max)
@@ -25,24 +25,27 @@ namespace Tablet_Area_Randomizer
         {
             if (randomizerStopwatch.Elapsed.TotalMilliseconds >= timer_interval_rand)
             {
-                randomizerStopwatch.Restart();
-
                 Vector2 randomizer_deviation = new Vector2(randomizer_deviation_min, randomizer_deviation_max);
+                Vector2 minimum_area_multiplier = split_xy ? new Vector2(minimum_area_multiplier_x, minimum_area_multiplier_y) : new Vector2(minimum_area_multiplier_xy, minimum_area_multiplier_xy);
 
-                Vector2 Minimum_area_multiplier = split_xy ? new Vector2(minimum_area_multiplier_x, minimum_area_multiplier_y) : new Vector2(minimum_area_multiplier_xy, minimum_area_multiplier_xy);
+                Vector2 random_vector2 = new Vector2((float)multiplier.NextDouble(), (float)multiplier.NextDouble());
+                random_vector2 = split_xy ? new Vector2(random_vector2.X, random_vector2.Y) : new Vector2(random_vector2.X, random_vector2.X);
 
-                Vector2 rands_xy = new Vector2((float)multiplier.NextDouble(), (float)multiplier.NextDouble());
-                Vector2 rand_xy = split_xy ? new Vector2(rands_xy.X, rands_xy.Y) : new Vector2(rands_xy.X, rands_xy.X);
+                Vector2 rand_range = new Vector2(
+                    SignlessClamp(random_vector2.X * (randomizer_deviation.Y * 2) - randomizer_deviation.Y, randomizer_deviation.X,randomizer_deviation.Y),
+                    SignlessClamp(random_vector2.Y * (randomizer_deviation.Y * 2) - randomizer_deviation.Y, randomizer_deviation.X, randomizer_deviation.Y)
+                );
+                
+                current_multiplier = new Vector2(
+                    Math.Clamp(current_multiplier.X + rand_range.X, minimum_area_multiplier.X, 1),
+                    Math.Clamp(current_multiplier.Y + rand_range.Y, minimum_area_multiplier.Y, 1)
+                );
 
-                Vector2 rand_range = new Vector2(SignlessClamp(rand_xy.X * (randomizer_deviation.Y * 2) - randomizer_deviation.Y, randomizer_deviation.X, randomizer_deviation.Y), SignlessClamp(rand_xy.Y * (randomizer_deviation.Y * 2) - randomizer_deviation.Y, randomizer_deviation.X, randomizer_deviation.Y));
-                Vector2 rand_clamp = new Vector2(Math.Clamp(rand_old.X + rand_range.X, Minimum_area_multiplier.X, 1), Math.Clamp(rand_old.Y + rand_range.Y, Minimum_area_multiplier.Y, 1));
-
-                rand_old = new Vector2(rand_clamp.X, rand_clamp.Y);
-
+                randomizerStopwatch.Restart();
                 timer_interval_rand = (float)multiplier.NextDouble() * (time_interval_max - time_interval_min) + time_interval_min;
             }
                 
-            return input *= rand_old;
+            return input *= current_multiplier;
         }
 
         public override event Action<IDeviceReport> Emit;
