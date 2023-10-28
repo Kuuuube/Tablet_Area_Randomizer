@@ -12,14 +12,8 @@ namespace Tablet_Area_Randomizer
     {
         protected HPETDeltaStopwatch randomizerStopwatch = new HPETDeltaStopwatch(true);
         private readonly Random multiplier = new Random();
-        Vector2 current_multiplier = new Vector2();
+        Vector2 current_multiplier = new Vector2(1, 1);
         float timer_interval_rand;
-
-        public static float SignlessClamp(float input, float min, float max)
-        {
-            int sign = input > 0 ? 1 : -1;
-            return Math.Clamp(Math.Abs(input), Math.Abs(min), Math.Abs(max)) * sign;
-        }
 
         public Vector2 Randomizer(Vector2 input)
         {
@@ -32,10 +26,10 @@ namespace Tablet_Area_Randomizer
                 random_vector2 = split_xy ? new Vector2(random_vector2.X, random_vector2.Y) : new Vector2(random_vector2.X, random_vector2.X);
 
                 Vector2 rand_range = new Vector2(
-                    SignlessClamp(random_vector2.X * (randomizer_deviation.Y * 2) - randomizer_deviation.Y, randomizer_deviation.X,randomizer_deviation.Y),
-                    SignlessClamp(random_vector2.Y * (randomizer_deviation.Y * 2) - randomizer_deviation.Y, randomizer_deviation.X, randomizer_deviation.Y)
+                    (random_vector2.X * (randomizer_deviation.Y - randomizer_deviation.X) + randomizer_deviation.X) * (random_vector2.X > 0.5 ? 1 : -1),
+                    (random_vector2.Y * (randomizer_deviation.Y - randomizer_deviation.X) + randomizer_deviation.X) * (random_vector2.Y > 0.5 ? 1 : -1)
                 );
-                
+
                 current_multiplier = new Vector2(
                     Math.Clamp(current_multiplier.X + rand_range.X, minimum_area_multiplier.X, 1),
                     Math.Clamp(current_multiplier.Y + rand_range.Y, minimum_area_multiplier.Y, 1)
@@ -44,8 +38,8 @@ namespace Tablet_Area_Randomizer
                 randomizerStopwatch.Restart();
                 timer_interval_rand = (float)multiplier.NextDouble() * (time_interval_max - time_interval_min) + time_interval_min;
             }
-                
-            return input *= current_multiplier;
+
+            return input /= current_multiplier;
         }
 
         public override event Action<IDeviceReport> Emit;
