@@ -22,6 +22,8 @@ Randomizes tablet area within given parameters.
 
 **Minumum Area Height:** The smallest percent of the current area's height that can be generated. This option is only used when **Enable Split Width/Height** is enabled.
 
+**Enable Smooth Transitions:** Applies each multiplier gradually over the duration it is set.
+
 ## Example Settings:
 <p align="middle">
   <img src="https://raw.githubusercontent.com/Kuuuube/Tablet_Area_Randomizer/main/example_settings.png" align="middle"/>

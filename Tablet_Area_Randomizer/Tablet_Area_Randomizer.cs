@@ -13,21 +13,44 @@ namespace Tablet_Area_Randomizer
         protected HPETDeltaStopwatch randomizerStopwatch = new HPETDeltaStopwatch(true);
         private readonly Random random_generator = new Random();
         Vector2 current_multiplier = new Vector2(1, 1);
+        Vector2 current_difference = new Vector2(0, 0);
         float timer_interval_rand;
 
         public Vector2 Randomizer(Vector2 input)
         {
             if (randomizerStopwatch.Elapsed.TotalMilliseconds >= timer_interval_rand)
             {
-                Vector2 randomizer_deviation = new Vector2(randomizer_deviation_min, randomizer_deviation_max);
                 Vector2 minimum_area_multiplier = split_xy ? new Vector2(minimum_area_multiplier_x, minimum_area_multiplier_y) : new Vector2(minimum_area_multiplier_xy, minimum_area_multiplier_xy);
 
-                Vector2 random_vector2 = new Vector2((float)random_generator.NextDouble(), (float)random_generator.NextDouble());
-                random_vector2 = split_xy ? new Vector2(random_vector2.X, random_vector2.Y) : new Vector2(random_vector2.X, random_vector2.X);
+                Vector2 try_multiplier = new Vector2();
+                Vector2 rand_range = new Vector2();
+                int i = 0;
+                while (try_multiplier.X > 1 || try_multiplier.X < minimum_area_multiplier.X || try_multiplier.Y > 1 || try_multiplier.Y < minimum_area_multiplier.Y)
+                {
+                    Vector2 randomizer_deviation = new Vector2(randomizer_deviation_min, randomizer_deviation_max);
 
-                Vector2 rand_range = new Vector2(
-                    (random_vector2.X * (randomizer_deviation.Y - randomizer_deviation.X) + randomizer_deviation.X) * (random_vector2.X > 0.5 ? 1 : -1),
-                    (random_vector2.Y * (randomizer_deviation.Y - randomizer_deviation.X) + randomizer_deviation.X) * (random_vector2.Y > 0.5 ? 1 : -1)
+                    Vector2 random_vector2 = new Vector2((float)random_generator.NextDouble(), (float)random_generator.NextDouble());
+                    random_vector2 = split_xy ? new Vector2(random_vector2.X, random_vector2.Y) : new Vector2(random_vector2.X, random_vector2.X);
+
+                    rand_range = new Vector2(
+                        (random_vector2.X * (randomizer_deviation.Y - randomizer_deviation.X) + randomizer_deviation.X) * (random_vector2.X > 0.5 ? 1 : -1),
+                        (random_vector2.Y * (randomizer_deviation.Y - randomizer_deviation.X) + randomizer_deviation.X) * (random_vector2.Y > 0.5 ? 1 : -1)
+                    );
+
+                    try_multiplier = new Vector2(
+                        current_multiplier.X + rand_range.X,
+                        current_multiplier.Y + rand_range.Y
+                    );
+                    i++;
+                    if (i > 25) //give up after 25 tries to find a fitting number
+                    {
+                        break;
+                    }
+                }
+
+                current_difference = new Vector2(
+                    Math.Clamp(current_multiplier.X + rand_range.X, minimum_area_multiplier.X, 1) - current_multiplier.X,
+                    Math.Clamp(current_multiplier.Y + rand_range.Y, minimum_area_multiplier.Y, 1) - current_multiplier.Y
                 );
 
                 current_multiplier = new Vector2(
@@ -39,6 +62,13 @@ namespace Tablet_Area_Randomizer
                 timer_interval_rand = (float)random_generator.NextDouble() * (time_interval_max - time_interval_min) + time_interval_min;
             }
 
+            if (smooth_transition)
+            {
+                return input /= new Vector2(
+                    (float)(current_multiplier.X - current_difference.X + current_difference.X * (randomizerStopwatch.Elapsed.TotalMilliseconds / timer_interval_rand)),
+                    (float)(current_multiplier.Y - current_difference.Y + current_difference.Y * (randomizerStopwatch.Elapsed.TotalMilliseconds / timer_interval_rand))
+                );
+            }
             return input /= current_multiplier;
         }
 
@@ -77,7 +107,7 @@ namespace Tablet_Area_Randomizer
         {
             set
             {
-                minimum_area_multiplier_xy = Math.Clamp(value, 0, 100) / 100;
+                minimum_area_multiplier_xy = Math.Clamp(value, 0.0000001f, 100) / 100;
             }
             get => minimum_area_multiplier_xy;
         }
@@ -122,7 +152,7 @@ namespace Tablet_Area_Randomizer
         {
             set
             {
-                minimum_area_multiplier_x = Math.Clamp(value, 0, 100) / 100;
+                minimum_area_multiplier_x = Math.Clamp(value, 0.0000001f, 100) / 100;
             }
             get => minimum_area_multiplier_x;
         }
@@ -136,10 +166,15 @@ namespace Tablet_Area_Randomizer
         {
             set
             {
-                minimum_area_multiplier_y = Math.Clamp(value, 0, 100) / 100;
+                minimum_area_multiplier_y = Math.Clamp(value, 0.0000001f, 100) / 100;
             }
             get => minimum_area_multiplier_y;
         }
         public float minimum_area_multiplier_y;
+
+        [BooleanProperty("Enable Smooth Transitions", ""), DefaultPropertyValue(true), ToolTip
+            ("Tablet Area Randomizer:\n\n" +
+            "Enable Smooth Transitions: Applies each multiplier gradually over the duration it is set.")]
+        public bool smooth_transition { set; get; }
     }
 }
