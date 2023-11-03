@@ -12,12 +12,23 @@ namespace Tablet_Area_Randomizer
     {
         protected HPETDeltaStopwatch randomizerStopwatch = new HPETDeltaStopwatch(true);
         private readonly Random random_generator = new Random();
-        Vector2 current_multiplier = new Vector2(1, 1);
+        Vector2 current_multiplier = new Vector2();
         Vector2 current_difference = new Vector2(0, 0);
         float timer_interval_rand;
 
         public Vector2 Randomizer(Vector2 input)
         {
+            if (current_multiplier == new Vector2()) //init
+            {
+                Vector2 minimum_area_multiplier = split_xy ? new Vector2(minimum_area_multiplier_x, minimum_area_multiplier_y) : new Vector2(minimum_area_multiplier_xy, minimum_area_multiplier_xy);
+                Vector2 random_vector2 = new Vector2((float)random_generator.NextDouble(), (float)random_generator.NextDouble());
+                random_vector2 = split_xy ? new Vector2(random_vector2.X, random_vector2.Y) : new Vector2(random_vector2.X, random_vector2.X);
+                current_multiplier = new Vector2(
+                    (random_vector2.X * (1 - minimum_area_multiplier.X) + minimum_area_multiplier.X),
+                    (random_vector2.Y * (1 - minimum_area_multiplier.X) + minimum_area_multiplier.X)
+                );
+            }
+
             if (randomizerStopwatch.Elapsed.TotalMilliseconds >= timer_interval_rand)
             {
                 Vector2 minimum_area_multiplier = split_xy ? new Vector2(minimum_area_multiplier_x, minimum_area_multiplier_y) : new Vector2(minimum_area_multiplier_xy, minimum_area_multiplier_xy);
